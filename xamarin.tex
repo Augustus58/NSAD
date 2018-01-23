@@ -227,12 +227,6 @@ copy& More table copy$^{\mathrm{a}}$& &  \\
 \end{center}
 \end{table}
 
-\begin{figure}[htbp]
-\centerline{\includegraphics{fig1.png}}
-\caption{Example of a figure caption.}
-\label{fig}
-\end{figure}
-
 Figure Labels: Use 8 point Times New Roman for Figure labels. Use words 
 rather than symbols or abbreviations when writing Figure axis labels to 
 avoid confusing the reader. As an example, write the quantity 
@@ -249,6 +243,8 @@ The preferred spelling of the word ``acknowledgment'' in America is without
 an ``e'' after the ``g''. Avoid the stilted expression ``one of us (R. B. 
 G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor 
 acknowledgments in the unnumbered footnote on the first page.
+
+\cite{IEEEhowto:IEEEtranpage}
 
 \section*{References}
 
@@ -271,6 +267,7 @@ element symbols.
 For papers published in translation journals, please give the English 
 citation first, followed by the original foreign-language citation \cite{b6}.
 
-\bibliography{../bibliography/bibliography}
+\bibliographystyle{./IEEEtran}
+\bibliography{bibliography}
 
 \end{document}
