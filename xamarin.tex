@@ -59,13 +59,17 @@ The main research goal of this paper is to answer the question:
 
 \section{Fundamentals of Xamarin.Forms}
 
+Sources for this section are~\cite{xamarin},~\cite{xamarin2},~and~\cite{xamarin3}. 
+
 In Xamarin.Forms all code is written in C\#. XML is used widely for configuration files and defining views. Mobile applications made with Xamarin.Forms are native mobile applications. The question is that how files written in XML and C\# are compiled to binary files runnable on Android or iOS. Answering that question is started by discussing how a Xamarin.Forms application is compiled from C\# and XML to a native binary.
 
 \subsection{From C\# and XML to a Native Binary}
 
-Xamarin.Forms is actually a cross-platform UI framework. Xamarin.Forms can render its UI components to native controls on each platform. In Xamarin.Forms, the whole application can be written in C\# and XML.
+Xamarin.Forms is actually a cross-platform User Interface (UI) framework. Xamarin.Forms can render its UI components to native controls on each platform. In Xamarin.Forms, the whole application can be written in C\# and XML.
 
 At the core of Xamarin is to present native APIs idiomatically to C\#. For instance native APIs of Android or iOS. Xamarin library for iOS bindings is Xamarin.iOS and respectively for Android it is Xamarin.Android.
+
+For instance Xamarin.iOS can be used to build a native iOS applications using C\# and XML. Respectively Xamarin.Android can be used to build native Android applications. Xamarin.Forms is not needed for building those native mobile applications. It \emph{can be used} to define UI for a multiplatform mobile software project.
 
 The process is different for iOS and Android. iOS is discussed first.
 
@@ -89,7 +93,11 @@ ART and Mono CLR both run on top of Android Linux kernel. Mono CLR contains of t
 
 \section{Xamarin.Forms User Interface Abstraction}
 
-Xamarin.Forms supports Extensible Application Markup Language (XAML) developed at Microsoft. XAML is XML-based general-purpose markup language. In can be used for instantiating and initialising objects. XAML is used in Xamarin.Forms to define abstract UI components. For instance a \emph{Label} for showing a paragraph can be defined with XAML by writing \code{<Label Text="Green" VerticalOptions="Center" />}.
+Xamarin.Forms supports Extensible Application Markup Language (XAML) developed at Microsoft. XAML is XML-based general-purpose markup language. In can be used for instantiating and initialising objects. XAML is used in Xamarin.Forms to define abstract UI components.
+
+For instance a \emph{Label} for showing a paragraph can be defined with XAML by writing \code{<Label Text="Green" VerticalOptions="Center" />}. Labels or other elements can be stacked horizontally or vertically using the \emph{StackLayout}. Elements to be stacked are just placed inside StackLayout tags: \code{<StackLayout Padding="10,0"><Label Text="First Label" VerticalOptions="CenterAndExpand" HorizontalOptions="Center" /><Label Text="Second Label" VerticalOptions="CenterAndExpand" HorizontalOptions="Center" /></StackLayout>}.
+
+XAML elements in Xamarin.Forms have corresponding classes representing abstract UI elements. Writing a XAML-file is just initialising and defining objects of those classes. Thereby one does not /emph{have to} use XAML, but using it might help in designing user interfaces.
 
 \nocite{xamarin}
 \nocite{xamarin2}
