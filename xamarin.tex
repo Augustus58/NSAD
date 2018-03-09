@@ -99,6 +99,22 @@ For instance a \emph{Label} for showing a paragraph can be defined with XAML by 
 
 XAML elements in Xamarin.Forms have corresponding classes representing abstract UI elements. Writing a XAML-file is just initialising and defining objects of those classes. Thereby one does not /emph{have to} use XAML, but using it might help in designing user interfaces.
 
+\section{Xamarin.Forms and Web Views}
+
+Creating modern user interfaces in mobile with Xamarin.Forms is generally slower than with for instance HTML5~\cite{html5} with Bootstrap UI library~\cite{bootstrap}. Reasons for that are discussed in the following. It is much easier to hire developers with decent web UI skills and knowledge than skills needed for Xamarin.Forms. Skills and knowledge needed for Xamarin.Forms development are for example XML (XAML), C\#, and MVVM-architecture. Xamarin.Forms might be easier for a developer who is experienced desktop UI developer \emph{with Microsoft technologies} using XAML (for example Windows Presentation Foundation (WPF)~\cite{wpf}).
+
+One solution for the problem might be a hybrid solution with Xamarin.Forms and some web technologies. With Xamarin.Forms (and Xamarin.Android and Xamarin.iOS) it is possible to define a frame for a mobile UI -- for Android and iOS at the same time. The UI frame can be reused and therefore it is acceptable to use more resources for building it. If the frame contains \emph{a wrapper} for web content, more complicated views can be built with web technologies.
+
+Whether to bundle web contents within an application or to serve contents from a web server depends on content type and delay requirements.
+
+If a content is static, in other words, the content is just a static non-pre-processed HTML5 page, it is realistic to bundle it within an application. If a content is non-static -- dynamic, and therefore somehow pre-processed,bundled web content could be for instance a light weight JavaScript application which gets data from an web API.
+
+An interesting technical level question is that how to pass an API token from an Xamarin.Forms application to an JavaScript application running inside an embedded browser (a wrapper). One answer to the question is to put an API token as an URL parameter when calling an embedded browser. The JavaScript application just reads the parameter and includes it to a HTTP or HTTPS request to an web API.
+
+The solution discussed here is very close to Cordova~\cite{cordova}, but without possibilities to connect native mobile platform APIs from JavaScript code. If the target is to only show a view containing text and pictures, there is no need to connect native mobile platform APIs.
+
+The fact that native APIs cannot called from JavaScript leads to a situation where native application views cannot activated from JavaScript code. 
+
 \nocite{xamarin}
 \nocite{xamarin2}
 \nocite{xamarin3}
