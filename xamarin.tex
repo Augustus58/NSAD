@@ -6,14 +6,28 @@
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  literate={\_}{{\_\allowbreak}}{1},
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+  breakatwhitespace=false,
+  }
+
+\usepackage{hyperref}
+\usepackage{breakurl}
+
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
-\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\code}[1]{{\small\texttt{#1}}}
 
 \begin{document}
 
-\title{Xamarin.Forms Development Fundamentals}
+\title{Xamarin.Forms User Interface Optimisations}
 
 \author{
   \IEEEauthorblockN{
@@ -30,11 +44,21 @@
 \maketitle
 
 \begin{abstract}
-  todo
+  Multi platform mobile development aims to reduce resources used in mobile development. Xamarin.Forms is a user interface abstraction for developing user interfaces for multiple platforms at once.
+
+  Targeting multiple platforms at once is an unavoidable compromise when it comes to user interfaces. There are clear differences in user interfaces between platforms.
+
+  Building polished user interfaces with Xamarin.Forms can be a resource demanding task. An hybrid approach of multiplatform development and web technologies is an compelling option.
+
+  Web views can be used for showing web contents. It is possible to build a JavaScript bridge between a surrounding mobile application and contents of a web view.
+
+  Using the bridge, data can be loaded inside a web view. It is also possible to change a view of the surrounding application from a web view.
+
+  The approach can also help in reusing user interfaces built with web technologies.
 \end{abstract}
 
 \begin{IEEEkeywords}
-  Xamarin.Forms, MVVM
+  Xamarin.Forms, MVVM, WebView, JavaScript
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -49,23 +73,27 @@ Xamarin is a San Francisco -based company founded in 2011 and owned by Microsoft
 
 Xamarin.Forms uses C\#~\cite{csharp} as the programming language, Visual~Studio~\cite{vs} or Visual~Studio~for~Mac as the development environment, and .NET~Framework class library for core functionalities, such as networking and JSON reading and writing. C\# is a multi-paradigm programming language which is closely associated to the .NET~Framework. C\# has had language level support right from the beginning for properties~\cite{properties} and events~\cite{events} which are useful in programming graphical user interfaces. Additionally C\# supports asynchronous programming~\cite{asyncro}.
 
-Xamarin.Forms uses the MVVM-architecture (Model-View-ViewModel) for dividing views and business logic. The Model handles the underlying data. The View handles the user interface. And finally, the ViewModel handles interaction between the Model and the View.
+Xamarin.Forms uses the MVVM-architecture (Model-View-ViewModel) for dividing views and business logic. The Model handles the underlying data. The View handles the user interface. Finally, ViewModel handles interaction between Model and View.
+
+Xamarin.Forms is a cross-platform user interface (UI) abstraction framework. With it, it is also possible to use shared software components for mobile application infrastructure, such as handling API calls and saving local data.
 
 \subsection*{Research Goals}
 
 The main research goal of this paper is to answer the question:
 
-\emph{What should a developer know about Xamarin.Forms in order to do professional mobile development with it?}
+\emph{How to deliver good looking mobile applications with Xamarin.Forms with low resources?}
 
-\section{Fundamentals of Xamarin.Forms}
+\section{Background}
 
-Sources for this section are~\cite{xamarin},~\cite{xamarin2},~and~\cite{xamarin3}. 
+At first, the route from written code to runnable native applications is discussed on an abstract level. Second, Xamarin.Forms UI abstraction is discussed.
 
 In Xamarin.Forms all code is written in C\#. XML is used widely for configuration files and defining views. Mobile applications made with Xamarin.Forms are native mobile applications. The question is that how files written in XML and C\# are compiled to binary files runnable on Android or iOS. Answering that question is started by discussing how a Xamarin.Forms application is compiled from C\# and XML to a native binary.
 
 \subsection{From C\# and XML to a Native Binary}
 
-Xamarin.Forms is actually a cross-platform User Interface (UI) framework. Xamarin.Forms can render its UI components to native controls on each platform. In Xamarin.Forms, the whole application can be written in C\# and XML.
+Sources for this section are~\cite{xamarin},~\cite{xamarin2},~and~\cite{xamarin3}.
+
+Xamarin.Forms can render its UI components to native controls on each platform. In Xamarin.Forms, the whole application can be written in C\# and XML.
 
 At the core of Xamarin is to present native APIs idiomatically to C\#. For instance native APIs of Android or iOS. Xamarin library for iOS bindings is Xamarin.iOS and respectively for Android it is Xamarin.Android.
 
@@ -91,21 +119,133 @@ When an Xamarin.Forms application is compiled to Android it is first converted t
 
 ART and Mono CLR both run on top of Android Linux kernel. Mono CLR contains of the .NET runtime libraries, so Xamarin.Forms applications can utilise .NET runtime components \emph{and} libraries offered by Android framework.
 
-\section{Xamarin.Forms User Interface Abstraction}
+\subsection{Xamarin.Forms User Interface Abstraction}
 
-Xamarin.Forms supports Extensible Application Markup Language (XAML) developed at Microsoft. XAML is XML-based general-purpose markup language. In can be used for instantiating and initialising objects. XAML is used in Xamarin.Forms to define abstract UI components.
+Xamarin.Forms supports Extensible Application Markup Language (XAML) developed at Microsoft. XAML is XML-based general-purpose markup language. In can be used for instantiating and initialising objects. XAML is used in Xamarin.Forms to define abstract UI components, interaction between those, and bindings to models.
 
-For instance a \emph{Label} for showing a paragraph can be defined with XAML by writing \code{<Label Text="Green" VerticalOptions="Center" />}. Labels or other elements can be stacked horizontally or vertically using the \emph{StackLayout}. Elements to be stacked are just placed inside StackLayout tags: \code{<StackLayout Padding="10,0"><Label Text="First Label" VerticalOptions="CenterAndExpand" HorizontalOptions="Center" /><Label Text="Second Label" VerticalOptions="CenterAndExpand" HorizontalOptions="Center" /></StackLayout>}.
+Note that XAML is not obligatory for defining UIs in Xamarin.Forms, views can be defined with only C\# files.
+
+For instance a \emph{Label} for showing a paragraph can be defined with XAML by writing \code{<Label Text="Green" VerticalOptions="Center" />}. Labels or other elements can be stacked horizontally or vertically using the \emph{StackLayout}. Elements to be stacked are just placed inside StackLayout tags:
+\begin{lstlisting}
+  <StackLayout Padding="10,0">
+    <Label Text="First Label"
+           VerticalOptions="CenterAndExpand"
+           HorizontalOptions="Center" />
+    <Label Text="Second Label"
+           VerticalOptions="CenterAndExpand"
+           HorizontalOptions="Center" />
+  </StackLayout>
+\end{lstlisting}.
 
 XAML elements in Xamarin.Forms have corresponding classes representing abstract UI elements. Writing a XAML-file is just initialising and defining objects of those classes. Thereby one does not /emph{have to} use XAML, but using it might help in designing user interfaces.
 
+Historically, XAML have been a solution for making co-operation of designers and developers more convenient. Designers have been using a WYSIWYG designing tool, for instance Blend for Visual Studio~\cite{blend} and programmers have been using an IDE for adding a logic and bindings to data models.
+
+At the moment, there are no decent WYSIWYG editor for Xamarin.Forms XAML. XAML code should be written by hand. At first, writing XAML code can be difficult, because
+\begin{itemize}
+\item XAML is verbose,
+\item XAML is for defining UI components, interaction, and bindings at the same time,
+\item and compiler logs for errors in XAML are usually not too informative or instructive.
+\end{itemize}
+
+Although there are no WYSIWYG editor for Xamarin.Forms XAML, there is a XAML preview tool in Visual Studio for Mac~\cite{vsfm} (Former Xamarin Studio).
+
+\subsubsection{XAML Property-Elements}
+
+The so called property-element syntax is important in defining nested UI components. For instance a \emph{Frame} component~\cite{frame} can have \emph{children components}. The Frame component has a property called \emph{Content}. Properties can be set in XAML by adding a child XML element for the parent XML element. If the parent element is \code{<Frame />}, its child element for the property Content is defined by adding an element \code{<Frame.Content />} inside the Frame element, as the following example expresses:
+\begin{lstlisting}
+  <Frame OutlineColor="Accent"
+         HorizontalOptions="Center"
+         VerticalOptions="Center">
+    <Frame.Content>
+      <Label Text="An nested UI component" />
+    </Frame.Content>
+  </Frame>
+\end{lstlisting}.
+
+\subsubsection{XAML Code-Behinds}
+
+XAML code-behind is a C\# file which contains a partial class definition~\cite{partial}. The reason for being partial is explained later.
+
+XAML and its code-behind are the View part of the MVVM-architecture. View presents data served by the related ViewModel and makes user interaction possible.
+
+A good distinction between a XAML and its code-behind is that XAML defines a state and code-behind defines a process. Therefore it is natural to define methods for handling button events in a code-behind. UI components can be defined in a code-behind, but it makes more sense to define those in the related XAML if it is available. Another typical use case for code-behind is to set an ViewModel. ViewModel can be injected to the code-behind or it can be instantiated inside the code-behind. Option to inject an ViewModel is useful for testing purposes.
+
+In the following, is a very basic but still realistic code-behind.
+
+\begin{lstlisting}
+  namespace ExampleNameSpace
+  {
+    public partial class ExampleXamlPage : ContentPage
+    {
+      public ExampleXamlPage()
+      {
+        InitializeComponent();
+      }
+    }
+  }
+\end{lstlisting}
+
+For the code-behind the corresponding XAML in the following.
+
+\begin{lstlisting}
+  <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               x:Class="ExampleNameSpace.ExampleXamlPage">
+    <ContentPage.Content>
+      <StackLayout>
+        <StackLayout.Children>
+          <Label Text="Hello from XAML!"
+                 FontAttributes="Bold,Italic" />
+        </StackLayout.Children>
+      </StackLayout>
+    </ContentPage.Content>
+  </ContentPage>
+\end{lstlisting}
+
+\subsubsection{What happens when XAML is parsed}
+
+In the building process, the XAML file is parsed and from the result a file containing a partial class definition is generated. The partial class definition in the generated file is a complementary definition for the definition in the corresponding code-behind. \emph{If} there is the attribute~\cite{attribute}
+\begin{lstlisting}
+  [XamlCompilation(XamlCompilationOptions.Compile)]
+\end{lstlisting}
+in the code-behind (or
+\begin{lstlisting}
+  [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
+\end{lstlisting}
+assembly attribute in a code file outside any \code{namespace} block), for each UI element defined in XAML, corresponding instantiation statements are declared in the method \emph{InitializeComponent} in the generated file. Otherwise there is the statement \code{this.LoadFromXaml(typeof(ExampleXamlPage));} in the method in the generated file. The former case means that the XAML is parsed in compile time. The latter case means that the XAML is parsed in runtime.
+
+\subsubsection{XAML Bindings}
+
+To write interactive and dynamic views in an efficient way in XAML one must know how XAML bindings behave~\cite{databinding}.
+
+For getting started in bindings in XAML, possibly the most important concepts to understand are binding \emph{source} ,binding \emph{target}, and how those relate to each other. A data binding always has a source and a target.
+
+The source is a property of an object. The property typically changes over time. When it changes, the target is updated automatically. That is the core function of bindings in XAML.
+
+The target of a data binding must be \emph{bindable}. It means that the target is backed by object of BindableProperty class~\cite{bindablepropertyclass}. That class is a part of the binding framework used in Xamarin.Forms. Object of the class stores information about a binding. For instance binding type (one-way or two-way) and a type of the target property.
+
+The source of a data-binding does not have any requirements. It has to be an public C\# property. Note that if the property changes over time, the surrounding class must implement the \code{INotifyPropertyChanged} interface~\cite{inotifypropertychanged}.
+
+Another important aspect of data-binding is the concept of binding context. Typical selection for binding context is  ViewModel, because it in many cases contains data to be shown in the corresponding UI. Binding context is a set of source properties -- an object. Binding context can be set in XAML or in its code-behind. If a class inherits the  BindableObject class~\cite{BindableObject}, binding context for it can be set.
+
+\subsubsection{Problems in XAML Bindings}
+
+If a binding does not work, check two things first: 1. \emph{Binding} context. 2. \emph{Is the source changed?} If it changes, at any point, it has to fire changing notification to the target~\cite{inotifypropertychanged}.
+
+\section{About Showing Carefully Designed Views in Xamarin.Forms}
+
+Creating modern user interfaces in mobile with Xamarin.Forms is generally slower than with for instance HTML5~\cite{html5} with Bootstrap UI library~\cite{bootstrap}. Reasons for that are discussed in the following. It is much easier to hire developers with decent web UI skills and knowledge than skills needed for Xamarin.Forms. Skills and knowledge needed for Xamarin.Forms development are for example XML (XAML), C\#, and MVVM-architecture. Xamarin.Forms might be easier for a developer who is experienced desktop UI developer \emph{with Microsoft technologies} using XAML (for example Windows Presentation Foundation (WPF)~\cite{wpf}). Or who have been using Blend for Visual Studio.
+
+Another challenge is that Xamarin.Forms is an UI abstraction for multiple mobile platforms -- it is not an foundation for flexible UI design. Creating UI elements in Xamarin.Forms is not as flexible and configurable as creating UI elements in web development. Customers are accustomed to see good looking web UIs. At the same time, an mobile application is in many cases an important part of public image of a customer. Therefore using Xamarin.Forms itself for creating UIs for demanding customers is not a good idea. It is not sufficient alone. It is possible to create somehow decent UIs with Xamarin.Forms, but the process is too resource demanding and there can be annoying glitches in resulting UIs.
+
+Xamarin.Forms itself can be a perfect tool for creating mobile tools for internal use where design and appearance are not important.
+
+There are two realistic options for using Xamarin.Forms for developing good looking applications. \emph{The first option} is to use native views for more complex and critical views. In Xamarin, it means using Xamarin.Android and Xamarin.iOS. Native views are written in C\# using binding classes served by Xamarin.Android and Xamarin.iOS. A drawback in this approach is the fact that these views should be coded twice -- for Xamarin.Android and for Xamarin.iOS. \emph{The second option} is to use web technologies for creating more complex and critical views.
+
 \section{Xamarin.Forms and Web Views}
 
-Creating modern user interfaces in mobile with Xamarin.Forms is generally slower than with for instance HTML5~\cite{html5} with Bootstrap UI library~\cite{bootstrap}. Reasons for that are discussed in the following. It is much easier to hire developers with decent web UI skills and knowledge than skills needed for Xamarin.Forms. Skills and knowledge needed for Xamarin.Forms development are for example XML (XAML), C\#, and MVVM-architecture. Xamarin.Forms might be easier for a developer who is experienced desktop UI developer \emph{with Microsoft technologies} using XAML (for example Windows Presentation Foundation (WPF)~\cite{wpf}).
-
-Another challenge is that Xamarin.Forms is an UI abstraction for multiple mobile platforms -- it is not an foundation for flexible UI design. Xamarin.Forms UI elements are not as flexible and configurable as UI elements in web development. Customers are accustomed to see good looking web UIs. At the same time an mobile application is in many cases an important part of public image of a customer. Therefore using Xamarin.Forms itself for creating UIs for demanding customers is not a good idea. It is possible to create somehow decent UIs with Xamarin.Forms, but the process is too resource demanding.
-
-One solution for the problem might be a hybrid solution with Xamarin.Forms and some web technologies. With Xamarin.Forms (and Xamarin.Android and Xamarin.iOS) it is possible to define a frame for a mobile UI -- for Android and iOS at the same time. The UI frame can be reused and therefore it is acceptable to use more resources for building it. If the frame contains \emph{a wrapper} for web contents, more complicated views can be built with web technologies. Some technical details can be found from~\cite{hwb}.
+One solution for the problem might be a hybrid solution with Xamarin.Forms and some web technologies. With Xamarin.Forms (and Xamarin.Android and Xamarin.iOS) it is possible to define a frame for a mobile UI -- for Android and iOS at the same time. The UI frame can be reused and therefore it is acceptable to use more resources for building it. If the frame contains \emph{a wrapper} for web contents, more complicated views can be built with web technologies.
 
 \subsection{Bundling Web Content Within an Application}
 
@@ -117,11 +257,56 @@ Bundled web contents are not vulnerable to network problems. Of course possible 
 
 \subsection{Passing Data to a Web View}
 
-Data to a web view can be passed by running a JavaScript code inside the web view from the surrounding application. Use cases for data to be passed are an API token or JSON data~\cite{json}.
+Data to a web view can be passed by executing a JavaScript code inside the web view from the surrounding application. Use cases for data to be passed are for example an API token or JSON data~\cite{json}.
 
-\subsection{Calling Methods In The Surrounding Application From An JavaScript Code}
+Xamarin.Forms (version 2.5.0) WebView~\cite{webview} offers method \code{Eval(String)} for running JavaScript inside the view.
 
-As presented in~\cite{hwb}, methods implemented in C# can be called from an JavaScript code running inside a web view. That is very useful for example if a web view is the main view of an application -- non web view can be activated by pressing a button on the web view.
+\subsection{Calling Methods In The Surrounding Application From A JavaScript Code}
+
+Calling methods implemented in C\# from a JavaScript code running inside a web view could be very useful for example if a web view is the main view of an application -- a non web view can be activated by pressing a button on the web view.
+
+Xamarin.Forms WebView does not offer methods for registering handlers for JavaScript calls from a page inside a view. That is not an obstacle, because WebView has the \code{Navigating} event which is raised every time when a navigation starts. A target URL (Uniform Resource Locator) can be inspected from the event. A special prefix can be set to URLs for calling methods. An event subscriber checks whether an URL is for requesting a new HTML page or for calling a method.
+
+Xamarin.Forms WebView can be used, as discussed, for passing data to a web view and calling methods outside the web view, but it is not a good choice for general use, because it renders to \code{UIWebView}~\cite{uiwebview} on iOS and it is deprecated technology on iOS. WKWebView~\cite{wkwebview} is recommended starting in iOS 8.0. Additionally using JavaScript for calling methods outside a web view is more elegant (by calling another function than
+\begin{lstlisting}
+  window.location.assign();
+\end{lstlisting}).
+
+It is possible to use JavaScript for calling methods outside a web view without the URL hack. Some technical details can be found from~\cite{hwb}. There is no implementation for executing JavaScript inside a web view in~\cite{hwb}. Technical details for implementing that are discussed next.
+
+\subsection{Implementing EvalJS for HybridWebView}
+
+There is no functionality for evaluating JavaScript inside a web view in the version implemented in~\cite{hwb}. Adding such functionality is straightforward. One approach is to add a delegate declaration
+\begin{lstlisting}
+  public delegate void EvalJSDelegate(string js);
+\end{lstlisting} to the \code{HybridWebView} custom control with a delegate property
+\begin{lstlisting}
+  public EvalJSDelegate EvalJS;
+\end{lstlisting}. Add the property to the \code{Cleanup()} method also. The following step is to assign JavaScript evaluation methods to the delegate.
+
+Assigning JavaScript evaluation methods should be done in the renderer classes for Android and iOS. First, add the method
+\begin{lstlisting}
+  void EvalJS(string js)
+  {
+    Control.EvaluateJavaScript(js, null);
+  }
+\end{lstlisting} \emph{to both of the classes}. The reason for using the same method is that WKWebview on iOS and Android.Webkit.Webview~\cite{AndroidWebkitWebview} on Android have both the same signature for a method taking care of JavaScript evaluation.
+
+After that, it is sufficient to add
+\begin{lstlisting}
+  e.NewElement.EvalJS = EvalJS;
+\end{lstlisting} inside the the code block
+\begin{lstlisting}
+  if (e.NewElement != null)
+\end{lstlisting} \emph{for both the renderers}.
+
+\subsection{Use Cases For HybridWebView}
+
+Assume that a company has developed web forms for updating user data. If these forms are responsive, it is possible to reuse these forms in mobile applications. By using the HybridWebView it is possible to show a non web view after successful posting of data. Only a small JavaScript function call could be added to the callback function for successful post.
+
+\section{Conclusion}
+
+Using hybrid web view techniques can help in reusing of UIs and in developing advanced user interfaces in multiplatform mobile development.
 
 \nocite{xamarin}
 \nocite{xamarin2}
